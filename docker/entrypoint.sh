@@ -3,6 +3,9 @@
 # Enable command tracing for debugging
 set -x
 
+# Log a message when the script starts
+echo "Running entrypoint.sh..."
+
 # Source the ASDF environment for node
 source /home/cdkuser/.asdf/asdf.sh
 

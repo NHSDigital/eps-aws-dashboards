@@ -1,5 +1,7 @@
 FROM ubuntu:24.04
 
+RUN echo "Dockerfile is running. Installing packages..."
+
 # Enable tracing in the build process
 RUN set -x && apt-get update && \
     export DEBIAN_FRONTEND=noninteractive && \
