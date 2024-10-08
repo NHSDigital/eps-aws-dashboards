@@ -6,13 +6,13 @@
 REPO_NAME=eps-aws-dashboards
 
 # this should be a regex used in jq command that parses the output from aws cloudformation list-stacks and just captures stacks we are interested in
-CAPTURE_REGEX="^cpt-ui-(sandbox-)?pr-(\\d+)$"
+CAPTURE_REGEX="^dashboards-(sandbox-)?pr-(\\d+)$"
 
 # this should be a regex that is used to get the pull request id from the cloud formation stack name
 # this is used in a replace command to replace the stack name so what is left is just the pull request id
-PULL_REQUEST_STACK_REGEX=cpt-ui-pr-
+PULL_REQUEST_STACK_REGEX=dashboards-pr-
 
-CNAME_QUERY=cpt-ui-pr
+CNAME_QUERY=dashboards-pr
 
 # this should be customised to delete cloudformation stacks and proxygen deployments if they are used
 main() {

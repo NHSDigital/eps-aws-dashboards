@@ -82,7 +82,7 @@ cdk-deploy: guard-stack_name
 cdk-synth:
 	npx cdk synth \
 		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/DashboardsApp.ts" \
-		--context stackName=cpt-ui \
+		--context stackName=dashboards \
 		--context VERSION_NUMBER=undefined \
 		--context COMMIT_ID=undefined \
 		--context epsDomain=$$epsDomain \

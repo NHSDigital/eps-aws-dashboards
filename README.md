@@ -188,7 +188,7 @@ Workflows are in the `.github/workflows` folder:
 - `dependabot_auto_approve_and_merge.yml` Workflow to auto merge dependabot updates.
 - `pr_title_check.yml` This workflow checks the pull request title has the correct format.
 - `pr-link.yml` This workflow template links Pull Requests to Jira tickets and runs when a pull request is opened.
-- `pull_request.yml` Called when pull request is opened or updated. Calls package_code and release_code to build and deploy the code. Deploys to dev AWS account. The main stack deployed adopts the naming convention cpt-ui-pr-<PULL_REQUEST_ID>
+- `pull_request.yml` Called when pull request is opened or updated. Calls package_code and release_code to build and deploy the code. Deploys to dev AWS account. The main stack deployed adopts the naming convention dashboards-pr-<PULL_REQUEST_ID>
 - `quality_checks.yml` Runs check-licenses, lint, test and SonarCloud scan against the repo. Called from pull_request.yml and release.yml
 - `release.yml` Creates a new release tag and deploys to all environments
 - `cdk_package_code.yml` Packages code into a docker image and uploads to a github artifact for later deployment.
