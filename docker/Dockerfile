@@ -1,51 +1,44 @@
 FROM ubuntu:24.04
-RUN apt-get update \
-    && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y upgrade
 
-RUN export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends jq unzip wget ca-certificates make git curl
+# Enable tracing in the build process
+RUN set -x && apt-get update && \
+    export DEBIAN_FRONTEND=noninteractive && \
+    apt-get -y upgrade
 
-# install aws stuff
-RUN wget -O /tmp/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
-    unzip /tmp/awscliv2.zip -d /tmp/aws-cli && \
-    /tmp/aws-cli/aws/install && \
-    rm tmp/awscliv2.zip && \
-    rm -rf /tmp/aws-cli
+# Install utilities and log installation
+RUN apt-get -y install --no-install-recommends jq unzip wget ca-certificates make git curl && \
+    echo "Installed required packages: jq, unzip, wget, ca-certificates, make, git, curl"
 
-#RUN export DEBIAN_FRONTEND=noninteractive \
-#    && apt-get -y install --no-install-recommends htop vim curl git build-essential \
-#    libffi-dev libssl-dev libxml2-dev libxslt1-dev libjpeg8-dev libbz2-dev \
-#    zlib1g-dev unixodbc unixodbc-dev libsecret-1-0 libsecret-1-dev libsqlite3-dev \
-#    apt-transport-https gnupg-agent \
-#    software-properties-common bash-completion python3-pip make libbz2-dev \
-#    libreadline-dev libsqlite3-dev llvm libncurses5-dev libncursesw5-dev \
- #   xz-utils tk-dev liblzma-dev libyaml-dev bats bats-support bats-assert bats-file \
- #   python3 python3-pip python3-dev
+# Check installed versions for debugging
+RUN jq --version
+RUN aws --version
+RUN git --version
 
+# Create user and set up environment
 RUN useradd -ms /bin/bash cdkuser
 RUN chown -R cdkuser /home/cdkuser
+
+# Set work directory and user
 WORKDIR /home/cdkuser
 USER cdkuser
-# Install ASDF
-RUN git clone https://github.com/asdf-vm/asdf.git /home/cdkuser/.asdf --branch v0.14.1; \
-    echo '. /home/cdkuser/.asdf/asdf.sh' >> ~/.bashrc; \
-    echo '. /home/cdkuser/.asdf/completions/asdf.bash' >> ~/.bashrc; \
-    echo 'PATH="$PATH:/home/cdkuser/.asdf/bin/"' >> ~/.bashrc;
+
+# Install ASDF and Node.js
+RUN git clone https://github.com/asdf-vm/asdf.git /home/cdkuser/.asdf --branch v0.14.1 && \
+    echo '. /home/cdkuser/.asdf/asdf.sh' >> ~/.bashrc && \
+    echo '. /home/cdkuser/.asdf/completions/asdf.bash' >> ~/.bashrc && \
+    echo 'PATH="$PATH:/home/cdkuser/.asdf/bin/"' >> ~/.bashrc
 
 ENV PATH="$PATH:/home/cdkuser/.asdf/bin/:/home/cdkuser/node_modules/.bin"
 
-# Install ASDF plugins
-RUN asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+# Install ASDF plugins and Node.js for debugging
+RUN asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git && \
+    asdf install && asdf reshim nodejs && \
+    echo "Installed Node.js version via ASDF: $(node --version)"
 
-# remove ruby, python, poetry from asdf install
-COPY --chown=cdkuser .tool-versions /home/cdkuser/.tool-versions
-RUN sed -i -n '/nodejs/p'  /home/cdkuser/.tool-versions
+# Debugging - list the contents of home directory
+RUN ls -la /home/cdkuser/
 
-RUN asdf install; \
-    asdf reshim nodejs
-
-    # copy files needed for deployment
+# Copy project files and set permissions
 COPY --chown=cdkuser packages /home/cdkuser/packages
 COPY --chown=cdkuser Makefile /home/cdkuser/
 COPY --chown=cdkuser node_modules /home/cdkuser/node_modules
@@ -54,4 +47,5 @@ COPY --chown=cdkuser package-lock.json /home/cdkuser/
 COPY --chown=cdkuser tsconfig.defaults.json /home/cdkuser/
 COPY --chown=cdkuser docker/entrypoint.sh /home/cdkuser/
 
+# Set the entrypoint to the debugged script
 ENTRYPOINT ["/home/cdkuser/entrypoint.sh"]
