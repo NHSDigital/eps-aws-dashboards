@@ -116,4 +116,4 @@ cdk-watch: guard-stack_name
 build-deployment-container-image:
 	rm -rf .asdf
 	cp -r $$HOME/.asdf .
-	docker build -t "eps-aws-dashboards" -f .devcontainer/Dockerfile .
+	docker build -t "eps-aws-dashboards" -f docker/Dockerfile .
