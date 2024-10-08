@@ -102,6 +102,11 @@ jobs:
 
       - name: Show diff
         run: |
+          echo "STACK_NAME=${{ inputs.STACK_NAME }}"
+          echo "VERSION_NUMBER=${{ inputs.VERSION_NUMBER }}"
+          echo "COMMIT_ID=${{ inputs.COMMIT_ID }}"
+          echo "AWS_ACCESS_KEY_ID=${{ steps.connect-aws.outputs.aws-access-key-id }}"
+
           docker run \
           -e AWS_ACCESS_KEY_ID=${{ steps.connect-aws.outputs.aws-access-key-id }} \
           -e AWS_SECRET_ACCESS_KEY=${{ steps.connect-aws.outputs.aws-secret-access-key }} \
@@ -117,6 +122,11 @@ jobs:
 
       - name: Deploy code
         run: |
+          echo "STACK_NAME=${{ inputs.STACK_NAME }}"
+          echo "VERSION_NUMBER=${{ inputs.VERSION_NUMBER }}"
+          echo "COMMIT_ID=${{ inputs.COMMIT_ID }}"
+          echo "AWS_ACCESS_KEY_ID=${{ steps.connect-aws.outputs.aws-access-key-id }}"
+
           docker run \
           -e AWS_ACCESS_KEY_ID=${{ steps.connect-aws.outputs.aws-access-key-id }} \
           -e AWS_SECRET_ACCESS_KEY=${{ steps.connect-aws.outputs.aws-secret-access-key }} \
