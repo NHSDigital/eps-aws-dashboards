@@ -7,7 +7,7 @@ import {Construct} from "constructs"
  */
 
 export const createDashboard = (scope: Construct) => {
-  const dashboard = new cw.Dashboard(scope, "Dash", {
+  const dashboard = new cw.Dashboard(scope, "Dashboards", {
     defaultInterval: Duration.days(7),
     variables: [
       new cw.DashboardVariable({

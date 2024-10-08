@@ -6,7 +6,7 @@ RUN apt-get update \
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends jq unzip wget ca-certificates make git curl
 
-# Install aws stuff
+# Install AWS stuff
 RUN wget -O /tmp/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
     unzip /tmp/awscliv2.zip -d /tmp/aws-cli && \
     /tmp/aws-cli/aws/install && \
