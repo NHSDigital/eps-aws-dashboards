@@ -1,6 +1,23 @@
 import * as cw from "aws-cdk-lib/aws-cloudwatch"
 import {Duration} from "aws-cdk-lib"
 
+const apiGatewayNames = [
+  "pfp-apigw",
+  "psu-apigw",
+  "tracker-auth-apigw-cognito"
+]
+
+const createApiGatewayMetric = (metricName: string, apiName: string, region: string) => {
+  return new cw.Metric({
+    namespace: "AWS/ApiGateway",
+    metricName: metricName,
+    dimensionsMap: {
+      ApiName: apiName
+    },
+    region: region
+  })
+}
+
 export const createApiGatewayWidget = (
   metricName: string,
   region: string = "eu-west-2",
@@ -11,32 +28,7 @@ export const createApiGatewayWidget = (
   return new cw.GraphWidget({
     title: `API Gateway ${metricName}`,
     region: region,
-    left: [
-      new cw.Metric({
-        namespace: "AWS/ApiGateway",
-        metricName: metricName,
-        dimensionsMap: {
-          ApiName: "pfp-apigw"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/ApiGateway",
-        metricName: metricName,
-        dimensionsMap: {
-          ApiName: "psu-apigw"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/ApiGateway",
-        metricName: metricName,
-        dimensionsMap: {
-          ApiName: "tracker-auth-apigw-cognito"
-        },
-        region: region
-      })
-    ],
+    left: apiGatewayNames.map((apiName) => createApiGatewayMetric(metricName, apiName, region)),
     view: cw.GraphWidgetView.TIME_SERIES,
     stacked: false,
     legendPosition: cw.LegendPosition.RIGHT,

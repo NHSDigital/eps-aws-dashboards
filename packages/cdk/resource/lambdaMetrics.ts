@@ -1,6 +1,35 @@
 import * as cw from "aws-cdk-lib/aws-cloudwatch"
 import {Duration} from "aws-cdk-lib"
 
+const functionNames = [
+  "pfp-GetMyPrescriptions",
+  "pfp-EnrichPrescriptions",
+  "pfp-CapabilityStatement",
+  "pfp-status",
+  "pfp-sandbox-Sandbox",
+  "pfp-sandbox-CapabilityStatement",
+  "pfp-sandbox-status",
+  "psu-GetStatusUpdates",
+  "psu-UpdatePrescriptionStatus",
+  "psu-CheckPrescriptionStatusUpdates",
+  "psu-ConvertRequestToFhirFormat",
+  "psu-CapabilityStatement",
+  "psu-status",
+  "psu-sandbox-UpdatePrescriptionStatusSandbox",
+  "fhir-validator-FHIRValidatorUKCore"
+]
+
+const createLambdaMetric = (metricName: string, functionName: string, region: string) => {
+  return new cw.Metric({
+    namespace: "AWS/Lambda",
+    metricName: metricName,
+    dimensionsMap: {
+      FunctionName: functionName
+    },
+    region: region
+  })
+}
+
 export const createLambdaMetricWidget = (
   metricName: string,
   region: string = "eu-west-2",
@@ -13,128 +42,7 @@ export const createLambdaMetricWidget = (
     width: width,
     title: `Lambda ${metricName}`,
     region: region,
-    left: [
-      new cw.Metric({
-        namespace: "AWS/Lambda",
-        metricName: metricName,
-        dimensionsMap: {
-          FunctionName: "pfp-GetMyPrescriptions"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/Lambda",
-        metricName: metricName,
-        dimensionsMap: {
-          FunctionName: "pfp-EnrichPrescriptions"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/Lambda",
-        metricName: metricName,
-        dimensionsMap: {
-          FunctionName: "pfp-CapabilityStatement"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/Lambda",
-        metricName: metricName,
-        dimensionsMap: {
-          FunctionName: "pfp-status"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/Lambda",
-        metricName: metricName,
-        dimensionsMap: {
-          FunctionName: "pfp-sandbox-Sandbox"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/Lambda",
-        metricName: metricName,
-        dimensionsMap: {
-          FunctionName: "pfp-sandbox-CapabilityStatement"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/Lambda",
-        metricName: metricName,
-        dimensionsMap: {
-          FunctionName: "pfp-sandbox-status"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/Lambda",
-        metricName: metricName,
-        dimensionsMap: {
-          FunctionName: "psu-GetStatusUpdates"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/Lambda",
-        metricName: metricName,
-        dimensionsMap: {
-          FunctionName: "psu-UpdatePrescriptionStatus"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/Lambda",
-        metricName: metricName,
-        dimensionsMap: {
-          FunctionName: "psu-CheckPrescriptionStatusUpdates"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/Lambda",
-        metricName: metricName,
-        dimensionsMap: {
-          FunctionName: "psu-ConvertRequestToFhirFormat"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/Lambda",
-        metricName: metricName,
-        dimensionsMap: {
-          FunctionName: "psu-CapabilityStatement"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/Lambda",
-        metricName: metricName,
-        dimensionsMap: {
-          FunctionName: "psu-status"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/Lambda",
-        metricName: metricName,
-        dimensionsMap: {
-          FunctionName: "psu-sandbox-UpdatePrescriptionStatusSandbox"
-        },
-        region: region
-      }),
-      new cw.Metric({
-        namespace: "AWS/Lambda",
-        metricName: metricName,
-        dimensionsMap: {
-          FunctionName: "fhir-validator-FHIRValidatorUKCore"
-        },
-        region: region
-      })
-    ],
+    left: functionNames.map((functionName) => createLambdaMetric(metricName, functionName, region)),
     view: cw.GraphWidgetView.TIME_SERIES,
     stacked: false,
     legendPosition: cw.LegendPosition.RIGHT,
