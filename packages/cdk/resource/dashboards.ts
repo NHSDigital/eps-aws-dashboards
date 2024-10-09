@@ -1,10 +1,9 @@
 import * as cw from "aws-cdk-lib/aws-cloudwatch"
 import {Duration} from "aws-cdk-lib"
 import {Construct} from "constructs"
-
-/**
- * Function to create the dashboard and its widgets
- */
+import {createApiGatewayWidget} from "./apiGatewayMetrics"
+import {createLambdaMetricWidget} from "./lambdaMetrics"
+import {createStepFunctionWidget} from "./stepFunctionMetrics"
 
 export const createDashboard = (scope: Construct) => {
   const dashboard = new cw.Dashboard(scope, "Dashboards", {
@@ -22,7 +21,27 @@ export const createDashboard = (scope: Construct) => {
     ]
   })
 
-  dashboard.addWidgets()
+  // Adding widgets in a structured way (flattened)
+  dashboard.addWidgets(
+    // First Row
+    createApiGatewayWidget("4XXError"),
+    createApiGatewayWidget("5XXError"),
+
+    // Second Row
+    createApiGatewayWidget("Latency"),
+    createApiGatewayWidget("IntegrationLatency"),
+
+    // Third Row
+    createApiGatewayWidget("Count"),
+    createStepFunctionWidget("PfP Step Functions"),
+
+    // Widgets are stacked vertically in a single column
+    createLambdaMetricWidget("Errors"),
+    createLambdaMetricWidget("Duration"),
+    createLambdaMetricWidget("Invocations"),
+    createLambdaMetricWidget("PostRuntimeExtensionsDuration"),
+    createLambdaMetricWidget("Throttles")
+  )
 
   return dashboard
 }
