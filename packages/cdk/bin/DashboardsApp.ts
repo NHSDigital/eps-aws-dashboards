@@ -2,7 +2,6 @@
 import "source-map-support/register"
 import * as cdk from "aws-cdk-lib"
 import {DashboardsStack} from "../stacks/dashboardsStack"
-import {USCertificatesStack} from "../stacks/USCertificatesStack"
 import {Aspects, Tags} from "aws-cdk-lib"
 import {AwsSolutionsChecks} from "cdk-nag"
 
@@ -20,11 +19,6 @@ Tags.of(app).add("version", version)
 Tags.of(app).add("stackName", stackName)
 Tags.of(app).add("commit", commit)
 
-const USCertificates = new USCertificatesStack(app, "USCertificates", {
-  env: {region: "us-east-1"},
-  stackName: stackName
-})
-
 const Dashboards = new DashboardsStack(app, "DashboardsStack", {
   env: {region: "eu-west-2"},
   stackName: stackName
@@ -34,7 +28,6 @@ const Dashboards = new DashboardsStack(app, "DashboardsStack", {
 app.synth()
 
 // add metadata to lambda so they dont get flagged as failing cfn-guard
-addCfnGuardMetadata(USCertificates, "Custom::CrossRegionExportWriterCustomResourceProvider")
 addCfnGuardMetadata(Dashboards, "Custom::CrossRegionExportReaderCustomResourceProvider")
 
 // finally run synth again with force to include the added metadata
