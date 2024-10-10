@@ -17,7 +17,7 @@ const stepFunctionMetrics: Array<MetricConfig> = [
   },
   {
     metricName: "ConfigurationRecorderInsufficientPermissionsFailure",
-    dimensions: {}
+    dimensions: {ResourceType: "AWS::StepFunctions::StateMachine"}
   }
 ]
 
