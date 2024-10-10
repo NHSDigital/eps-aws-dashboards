@@ -3,8 +3,7 @@ import {Duration} from "aws-cdk-lib"
 
 const apiGatewayNames = [
   "pfp-apigw",
-  "psu-apigw",
-  "tracker-auth-apigw-cognito"
+  "psu-apigw"
 ]
 
 const createApiGatewayMetric = (metricName: string, apiName: string, region: string) => {
