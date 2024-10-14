@@ -1,71 +1,74 @@
 import * as cw from "aws-cdk-lib/aws-cloudwatch"
-import {Duration} from "aws-cdk-lib"
+import {Duration, Stack} from "aws-cdk-lib"
 
 type MetricConfig = {
   metricName: string
   dimensions?: Record<string, string>
 }
 
-const stepFunctionMetrics: Array<MetricConfig> = [
+const stepFunctionMetrics = (
+  stack: Stack,
+  stateMachineName: string
+): Array<MetricConfig> => [
   {
     metricName: "ExecutionsStarted",
     dimensions: {
-      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
     }
   },
   {
     metricName: "ExecutionsSucceeded",
     dimensions: {
-      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
     }
   },
   {
     metricName: "ExecutionsFailed",
     dimensions: {
-      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
     }
   },
   {
     metricName: "ExecutionsTimedOut",
     dimensions: {
-      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
     }
   },
   {
     metricName: "ExecutionsAborted",
     dimensions: {
-      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
     }
   },
   {
     metricName: "ExecutionTime",
     dimensions: {
-      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
     }
   },
   {
     metricName: "ExpressExecutionMemory",
     dimensions: {
-      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
     }
   },
   {
     metricName: "ExpressExecutionBilledDuration",
     dimensions: {
-      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
     }
   },
   {
     metricName: "ExpressExecutionBilledMemory",
     dimensions: {
-      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
     }
   }
 ]
 
 const createMetric = (config: MetricConfig, region: string) => {
   return new cw.Metric({
-    namespace: "AWS/Config",
+    namespace: "AWS/States",
     metricName: config.metricName,
     dimensionsMap: config.dimensions || {},
     region: region
@@ -74,6 +77,8 @@ const createMetric = (config: MetricConfig, region: string) => {
 
 export const createStepFunctionWidget = (
   title: string,
+  stack: Stack,
+  stateMachineName: string,
   region: string = "eu-west-2",
   period: number = 300,
   height: number = 6,
@@ -82,7 +87,9 @@ export const createStepFunctionWidget = (
   return new cw.GraphWidget({
     title: title,
     region: region,
-    left: stepFunctionMetrics.map((metricConfig) => createMetric(metricConfig, region)),
+    left: stepFunctionMetrics(stack, stateMachineName).map((metricConfig) =>
+      createMetric(metricConfig, region)
+    ),
     view: cw.GraphWidgetView.TIME_SERIES,
     stacked: false,
     legendPosition: cw.LegendPosition.RIGHT,

@@ -1,5 +1,5 @@
 import * as cw from "aws-cdk-lib/aws-cloudwatch"
-import {Duration} from "aws-cdk-lib"
+import {Duration, Stack} from "aws-cdk-lib"
 import {Construct} from "constructs"
 import {createApiGatewayWidget} from "./apiGatewayMetrics"
 import {createLambdaMetricWidget} from "./lambdaMetrics"
@@ -10,6 +10,9 @@ export class Dashboards extends Construct {
 
   public constructor(scope: Construct, id: string) {
     super(scope, id)
+
+    // Get the current stack
+    const stack = Stack.of(this)
 
     // Create the dashboard
     const dashboard = new cw.Dashboard(scope, "Dashboards", {
@@ -39,7 +42,7 @@ export class Dashboards extends Construct {
 
       // Third Row
       createApiGatewayWidget("Count"),
-      createStepFunctionWidget("PfP Step Function"),
+      createStepFunctionWidget("PfP Step Function", stack, "pfp-GetMyPrescriptions"),
 
       // Widgets are stacked vertically in a single column
       createLambdaMetricWidget("Errors"),
