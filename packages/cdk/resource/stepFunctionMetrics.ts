@@ -8,16 +8,58 @@ type MetricConfig = {
 
 const stepFunctionMetrics: Array<MetricConfig> = [
   {
-    metricName: "ConfigurationRecorderInsufficientPermissionsFailure",
-    dimensions: {ResourceType: "AWS::StepFunctions::Activity"}
+    metricName: "ExecutionsStarted",
+    dimensions: {
+      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+    }
   },
   {
-    metricName: "ConfigurationItemsRecorded",
-    dimensions: {ResourceType: "AWS::StepFunctions::StateMachine"}
+    metricName: "ExecutionsSucceeded",
+    dimensions: {
+      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+    }
   },
   {
-    metricName: "ConfigurationRecorderInsufficientPermissionsFailure",
-    dimensions: {ResourceType: "AWS::StepFunctions::StateMachine"}
+    metricName: "ExecutionsFailed",
+    dimensions: {
+      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+    }
+  },
+  {
+    metricName: "ExecutionsTimedOut",
+    dimensions: {
+      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+    }
+  },
+  {
+    metricName: "ExecutionsAborted",
+    dimensions: {
+      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+    }
+  },
+  {
+    metricName: "ExecutionTime",
+    dimensions: {
+      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+    }
+  },
+  {
+    metricName: "ExpressExecutionMemory",
+    dimensions: {
+      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+    }
+  },
+  {
+    metricName: "ExpressExecutionBilledDuration",
+    dimensions: {
+      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+    }
+  },
+  {
+    metricName: "ExpressExecutionBilledMemory",
+    dimensions: {
+      StateMachineArn: "arn:aws:states:eu-west-2:591291862413:stateMachine:pfp-GetMyPrescriptions"
+    }
   }
 ]
 
@@ -43,7 +85,7 @@ export const createStepFunctionWidget = (
     left: stepFunctionMetrics.map((metricConfig) => createMetric(metricConfig, region)),
     view: cw.GraphWidgetView.TIME_SERIES,
     stacked: false,
-    legendPosition: cw.LegendPosition.BOTTOM,
+    legendPosition: cw.LegendPosition.RIGHT,
     period: Duration.seconds(period),
     statistic: "Average",
     height: height,

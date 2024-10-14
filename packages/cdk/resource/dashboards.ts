@@ -39,7 +39,7 @@ export class Dashboards extends Construct {
 
       // Third Row
       createApiGatewayWidget("Count"),
-      createStepFunctionWidget("Step Functions"),
+      createStepFunctionWidget("PfP Step Function"),
 
       // Widgets are stacked vertically in a single column
       createLambdaMetricWidget("Errors"),
