@@ -6,71 +6,35 @@ type MetricConfig = {
   dimensions?: Record<string, string>
 }
 
-const stepFunctionMetrics = (
+const generateStepFunctionMetrics = (
   stack: Stack,
   stateMachineName: string
-): Array<MetricConfig> => [
-  {
-    metricName: "ExecutionsStarted",
-    dimensions: {
-      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
-    }
-  },
-  {
-    metricName: "ExecutionsSucceeded",
-    dimensions: {
-      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
-    }
-  },
-  {
-    metricName: "ExecutionsFailed",
-    dimensions: {
-      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
-    }
-  },
-  {
-    metricName: "ExecutionsTimedOut",
-    dimensions: {
-      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
-    }
-  },
-  {
-    metricName: "ExecutionsAborted",
-    dimensions: {
-      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
-    }
-  },
-  {
-    metricName: "ExecutionTime",
-    dimensions: {
-      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
-    }
-  },
-  {
-    metricName: "ExpressExecutionMemory",
-    dimensions: {
-      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
-    }
-  },
-  {
-    metricName: "ExpressExecutionBilledDuration",
-    dimensions: {
-      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
-    }
-  },
-  {
-    metricName: "ExpressExecutionBilledMemory",
-    dimensions: {
-      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
-    }
-  }
-]
+): Array<MetricConfig> => {
+  const metricNames = [
+    "ExecutionsStarted",
+    "ExecutionsSucceeded",
+    "ExecutionsFailed",
+    "ExecutionsTimedOut",
+    "ExecutionsAborted",
+    "ExecutionTime",
+    "ExpressExecutionMemory",
+    "ExpressExecutionBilledDuration",
+    "ExpressExecutionBilledMemory"
+  ]
 
-const createMetric = (config: MetricConfig, region: string) => {
+  return metricNames.map((metricName) => ({
+    metricName,
+    dimensions: {
+      StateMachineArn: `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
+    }
+  }))
+}
+
+const createStepFunctionMetric = (config: MetricConfig, region: string) => {
   return new cw.Metric({
     namespace: "AWS/States",
     metricName: config.metricName,
-    dimensionsMap: config.dimensions || {},
+    dimensionsMap: config.dimensions,
     region: region
   })
 }
@@ -87,8 +51,8 @@ export const createStepFunctionWidget = (
   return new cw.GraphWidget({
     title: title,
     region: region,
-    left: stepFunctionMetrics(stack, stateMachineName).map((metricConfig) =>
-      createMetric(metricConfig, region)
+    left: generateStepFunctionMetrics(stack, stateMachineName).map((metricConfig) =>
+      createStepFunctionMetric(metricConfig, region)
     ),
     view: cw.GraphWidgetView.TIME_SERIES,
     stacked: false,
