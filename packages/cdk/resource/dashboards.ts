@@ -2,7 +2,7 @@ import * as cw from "aws-cdk-lib/aws-cloudwatch"
 import {Duration, Stack} from "aws-cdk-lib"
 import {Construct} from "constructs"
 import {createApiGatewayWidget} from "./apiGatewayMetrics"
-import {createLambdaMetricWidget} from "./lambdaMetrics"
+import {createLambdaWidget} from "./lambdaMetrics"
 import {createStepFunctionWidget} from "./stepFunctionMetrics"
 import {createPsuDynamoDbTableWidget} from "./dynamoDbMetrics"
 import {createPsuDynamoDbTableOperationWidget} from "./dynamoDbOperationMetrics"
@@ -55,11 +55,11 @@ export class Dashboards extends Construct {
       createPsuDynamoDbTableOperationWidget("PSU Dynamo DB Table Operation", stack, "psu-PrescriptionStatusUpdates"),
 
       // Widgets are stacked vertically in a single column
-      createLambdaMetricWidget("Errors"),
-      createLambdaMetricWidget("Duration"),
-      createLambdaMetricWidget("Invocations"),
-      createLambdaMetricWidget("PostRuntimeExtensionsDuration"),
-      createLambdaMetricWidget("Throttles")
+      createLambdaWidget("Errors"),
+      createLambdaWidget("Duration"),
+      createLambdaWidget("Invocations"),
+      createLambdaWidget("PostRuntimeExtensionsDuration"),
+      createLambdaWidget("Throttles")
     )
 
     this.dashboardArn = dashboard.dashboardArn // Store the ARN of the dashboard
