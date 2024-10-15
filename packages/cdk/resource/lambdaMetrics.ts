@@ -1,5 +1,5 @@
 import * as cw from "aws-cdk-lib/aws-cloudwatch"
-import {Duration} from "aws-cdk-lib"
+import {Duration, Stack} from "aws-cdk-lib"
 
 const functionNames = [
   "pfp-GetMyPrescriptions",
@@ -19,34 +19,34 @@ const functionNames = [
   "fhir-validator-FHIRValidatorUKCore"
 ]
 
-const createLambdaMetrics = (metricName: string, functionName: string, region: string) => {
+const createLambdaMetrics = (metricName: string, functionName: string, stack: Stack) => {
   return new cw.Metric({
     namespace: "AWS/Lambda",
     metricName: metricName,
     dimensionsMap: {
       FunctionName: functionName
     },
-    region: region
+    region: stack.region
   })
 }
 
 export const createLambdaWidget = (
   metricName: string,
-  region: string = "eu-west-2",
+  stack: Stack,
   period: number = 300,
   height: number = 9,
   width: number = 24
 ) => {
   return new cw.GraphWidget({
-    height: height,
-    width: width,
     title: `Lambda ${metricName}`,
-    region: region,
-    left: functionNames.map((functionName) => createLambdaMetrics(metricName, functionName, region)),
+    region: stack.region,
+    left: functionNames.map((functionName) => createLambdaMetrics(metricName, functionName, stack)),
     view: cw.GraphWidgetView.TIME_SERIES,
     stacked: false,
     legendPosition: cw.LegendPosition.RIGHT,
     period: Duration.minutes(period),
-    statistic: "Average"
+    statistic: "Average",
+    height: height,
+    width: width
   })
 }

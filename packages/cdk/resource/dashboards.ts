@@ -57,11 +57,11 @@ export class Dashboards extends Construct {
       createPsuDynamoDbTableOperationWidget("PSU Dynamo DB Table Operation", stack, "psu-PrescriptionStatusUpdates"),
 
       // Widgets are stacked vertically in a single column
-      createLambdaWidget("Errors"),
-      createLambdaWidget("Duration"),
-      createLambdaWidget("Invocations"),
-      createLambdaWidget("PostRuntimeExtensionsDuration"),
-      createLambdaWidget("Throttles")
+      createLambdaWidget("Errors", stack),
+      createLambdaWidget("Duration", stack),
+      createLambdaWidget("Invocations", stack),
+      createLambdaWidget("PostRuntimeExtensionsDuration", stack),
+      createLambdaWidget("Throttles", stack)
     )
 
     this.dashboardArn = dashboard.dashboardArn // Store the ARN of the dashboard
