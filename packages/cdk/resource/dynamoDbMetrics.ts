@@ -9,9 +9,9 @@ const dynamoDbMetrics = [
 ]
 
 const createDynamoDbMetrics = (
-  stack: Stack,
   tableName: string,
-  metricNames: Array<string>
+  metricNames: Array<string>,
+  stack: Stack
 ): Array<cw.Metric> => {
   return metricNames.map((metricName) => {
     return new cw.Metric({
@@ -20,7 +20,7 @@ const createDynamoDbMetrics = (
       dimensionsMap: {
         TableName: tableName
       },
-      region: "eu-west-2"
+      region: stack.region
     })
   })
 }
@@ -35,8 +35,8 @@ export const createPsuDynamoDbTableWidget = (
 ) => {
   return new cw.GraphWidget({
     title: widgetName,
-    region: "eu-west-2",
-    left: createDynamoDbMetrics(stack, tableName, dynamoDbMetrics),
+    region: stack.region,
+    left: createDynamoDbMetrics(tableName, dynamoDbMetrics, stack),
     view: cw.GraphWidgetView.TIME_SERIES,
     stacked: false,
     legendPosition: cw.LegendPosition.RIGHT,

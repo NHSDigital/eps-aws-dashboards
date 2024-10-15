@@ -10,9 +10,9 @@ const operationDynamoDbMetrics = [
 ]
 
 const createDynamoDbOperationMetrics = (
-  stack: Stack,
   tableName: string,
-  metricConfigs: Array<{metricName: string; operation?: string}>
+  metricConfigs: Array<{metricName: string; operation?: string}>,
+  stack: Stack
 ): Array<cw.IMetric> => {
   return metricConfigs.map(({metricName, operation}) => {
     const dimensions: Record<string, string> = {TableName: tableName}
@@ -23,7 +23,7 @@ const createDynamoDbOperationMetrics = (
       namespace: "AWS/DynamoDB",
       metricName: metricName,
       dimensionsMap: dimensions,
-      region: "eu-west-2"
+      region: stack.region
     })
   })
 }
@@ -38,12 +38,8 @@ export const createPsuDynamoDbTableOperationWidget = (
 ) => {
   return new cw.GraphWidget({
     title: widgetName,
-    region: "eu-west-2",
-    left: createDynamoDbOperationMetrics(
-      stack,
-      tableName,
-      operationDynamoDbMetrics
-    ),
+    region: stack.region,
+    left: createDynamoDbOperationMetrics(tableName, operationDynamoDbMetrics, stack),
     view: cw.GraphWidgetView.TIME_SERIES,
     stacked: false,
     legendPosition: cw.LegendPosition.RIGHT,
