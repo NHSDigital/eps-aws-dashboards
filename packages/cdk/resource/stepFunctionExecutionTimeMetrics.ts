@@ -22,9 +22,9 @@ const executionTimeMetrics: Array<MetricConfig> = [
 ]
 
 const createStepFunctionMetrics = (
-  stack: Stack,
   metricName: string,
-  metricsConfig: Array<MetricConfig>
+  metricsConfig: Array<MetricConfig>,
+  stack: Stack
 ): Array<cw.Metric> => {
   return metricsConfig.map(({stateMachineName, label}) => {
     const stateMachineArn = `arn:aws:states:${stack.region}:${stack.account}:stateMachine:${stateMachineName}`
@@ -51,7 +51,7 @@ export const createStepFunctionExecutionTimeWidget = (
   return new cw.GraphWidget({
     title: widgetName,
     region: stack.region,
-    left: createStepFunctionMetrics(stack, metricName, executionTimeMetrics),
+    left: createStepFunctionMetrics(metricName, executionTimeMetrics, stack),
     view: cw.GraphWidgetView.TIME_SERIES,
     stacked: false,
     legendPosition: cw.LegendPosition.RIGHT,
