@@ -23,7 +23,8 @@ const createDynamoDbOperationMetrics = (
       namespace: "AWS/DynamoDB",
       metricName: metricName,
       dimensionsMap: dimensions,
-      region: stack.region
+      region: stack.region,
+      label: metricName
     })
   })
 }
