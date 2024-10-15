@@ -4,6 +4,8 @@ import {Construct} from "constructs"
 import {createApiGatewayWidget} from "./apiGatewayMetrics"
 import {createLambdaMetricWidget} from "./lambdaMetrics"
 import {createStepFunctionWidget} from "./stepFunctionMetrics"
+import {createPsuDynamoDbTableWidget} from "./dynamoDbMetrics"
+import {createPsuDynamoDbTableOperationWidget} from "./dynamoDbOperationMetrics"
 
 export class Dashboards extends Construct {
   public readonly dashboardArn: string // Expose the dashboard ARN as a public property
@@ -47,6 +49,10 @@ export class Dashboards extends Construct {
       // Fourth Row
       createStepFunctionWidget("PSU Step Function", stack, "psu-UpdatePrescriptionStatus"),
       createStepFunctionWidget("CPSU Step Function", stack, "psu-Format1UpdatePrescriptionsStatus"),
+
+      // Fifth Row
+      createPsuDynamoDbTableWidget("PSU Dynamo DB Table", stack, "psu-PrescriptionStatusUpdates"),
+      createPsuDynamoDbTableOperationWidget("PSU Dynamo DB Table Operation", stack, "psu-PrescriptionStatusUpdates"),
 
       // Widgets are stacked vertically in a single column
       createLambdaMetricWidget("Errors"),
