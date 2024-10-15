@@ -26,8 +26,8 @@ export class Dashboards extends Construct {
           type: cw.VariableType.PATTERN,
           label: "RegionPattern",
           inputType: cw.VariableInputType.INPUT,
-          value: "eu-west-2",
-          defaultValue: cw.DefaultValue.value("eu-west-2"),
+          value: stack.region,
+          defaultValue: cw.DefaultValue.value(stack.region),
           visible: true
         })
       ]
@@ -36,15 +36,15 @@ export class Dashboards extends Construct {
     // Adding widgets in a structured way
     dashboard.addWidgets(
       // First Row
-      createApiGatewayWidget("4XXError"),
-      createApiGatewayWidget("5XXError"),
+      createApiGatewayWidget("4XXError", stack),
+      createApiGatewayWidget("5XXError", stack),
 
       // Second Row
-      createApiGatewayWidget("Latency"),
-      createApiGatewayWidget("IntegrationLatency"),
+      createApiGatewayWidget("Latency", stack),
+      createApiGatewayWidget("IntegrationLatency", stack),
 
       // Third Row
-      createApiGatewayWidget("Count"),
+      createApiGatewayWidget("Count", stack),
       createStepFunctionExecutionTimeWidget("Step Function Execution Time", stack, "ExecutionTime"),
 
       // Fourth Row
