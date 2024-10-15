@@ -15,11 +15,7 @@ const generateStepFunctionMetrics = (
     "ExecutionsSucceeded",
     "ExecutionsFailed",
     "ExecutionsTimedOut",
-    "ExecutionsAborted",
-    "ExecutionTime",
-    "ExpressExecutionMemory",
-    "ExpressExecutionBilledDuration",
-    "ExpressExecutionBilledMemory"
+    "ExecutionsAborted"
   ]
 
   return metricNames.map((metricName) => ({

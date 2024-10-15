@@ -42,7 +42,10 @@ export class Dashboards extends Construct {
 
       // Third Row
       createApiGatewayWidget("Count"),
+
+      // Fourth Row
       createStepFunctionWidget("PfP Step Function", stack, "pfp-GetMyPrescriptions"),
+      createStepFunctionWidget("PSU Step Function", stack, "psu-UpdatePrescriptionStatus"),
 
       // Widgets are stacked vertically in a single column
       createLambdaMetricWidget("Errors"),
