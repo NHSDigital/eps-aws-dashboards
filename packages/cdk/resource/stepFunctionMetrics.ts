@@ -42,7 +42,7 @@ export const createStepFunctionWidget = (
   region: string = "eu-west-2",
   period: number = 300,
   height: number = 6,
-  width: number = 12
+  width: number = 8
 ) => {
   return new cw.GraphWidget({
     title: title,

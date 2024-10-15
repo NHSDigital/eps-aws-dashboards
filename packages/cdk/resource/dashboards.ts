@@ -4,6 +4,7 @@ import {Construct} from "constructs"
 import {createApiGatewayWidget} from "./apiGatewayMetrics"
 import {createLambdaWidget} from "./lambdaMetrics"
 import {createStepFunctionWidget} from "./stepFunctionMetrics"
+import {createStepFunctionExecutionTimeWidget} from "./stepFunctionExecutionTimeMetrics"
 import {createPsuDynamoDbTableWidget} from "./dynamoDbMetrics"
 import {createPsuDynamoDbTableOperationWidget} from "./dynamoDbOperationMetrics"
 
@@ -43,10 +44,11 @@ export class Dashboards extends Construct {
       createApiGatewayWidget("IntegrationLatency"),
 
       // Third Row
-      createStepFunctionWidget("PfP Step Function", stack, "pfp-GetMyPrescriptions"),
       createApiGatewayWidget("Count"),
+      createStepFunctionExecutionTimeWidget("Step Function Execution Time", stack, "ExecutionTime"),
 
       // Fourth Row
+      createStepFunctionWidget("PfP Step Function", stack, "pfp-GetMyPrescriptions"),
       createStepFunctionWidget("PSU Step Function", stack, "psu-UpdatePrescriptionStatus"),
       createStepFunctionWidget("CPSU Step Function", stack, "psu-Format1UpdatePrescriptionsStatus"),
 
