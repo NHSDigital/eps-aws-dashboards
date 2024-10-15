@@ -9,15 +9,15 @@ type MetricConfig = {
 const executionTimeMetrics: Array<MetricConfig> = [
   {
     stateMachineName: "pfp-GetMyPrescriptions",
-    label: "PfP ExecutionTime"
+    label: "PfP"
   },
   {
     stateMachineName: "psu-UpdatePrescriptionStatus",
-    label: "PSU ExecutionTime"
+    label: "PSU"
   },
   {
     stateMachineName: "psu-Format1UpdatePrescriptionsStatus",
-    label: "CPSU ExecutionTime"
+    label: "CPSU"
   }
 ]
 
@@ -35,7 +35,7 @@ const createStepFunctionMetrics = (
         StateMachineArn: stateMachineArn
       },
       region: stack.region,
-      label: label
+      label: `${label} ${metricName}`
     })
   })
 }
