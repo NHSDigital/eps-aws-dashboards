@@ -148,7 +148,7 @@ jobs:
           -e COMMIT_ID="${{ inputs.COMMIT_ID}}" \
           -e SHOW_DIFF="true" \
           -e DEPLOY_CODE="false" \
-          eps-aws-dashboards
+          cdk-utils-build-repo:latest
         shell: bash
 
       - name: Deploy code
@@ -163,7 +163,7 @@ jobs:
           -e COMMIT_ID="${{ inputs.COMMIT_ID}}" \
           -e SHOW_DIFF="false" \
           -e DEPLOY_CODE="true" \
-          eps-aws-dashboards
+          cdk-utils-build-repo:latest
         shell: bash
 
       - name: create_int_release_notes
