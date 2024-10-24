@@ -90,7 +90,11 @@ jobs:
           role-to-assume: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
           role-session-name: eps-aws-dashboards-pull-image
 
-
+      - name: build_artifact download
+        uses: actions/download-artifact@v4
+        with:
+          name: build_artifact
+  
       - name: extract build_artifact
         run: |
           mkdir -p .build
