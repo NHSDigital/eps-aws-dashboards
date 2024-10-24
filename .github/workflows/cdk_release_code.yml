@@ -83,28 +83,63 @@ jobs:
           DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
 
       - name: Configure AWS Credentials
+        id: connect-aws-pull-image
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
+          role-session-name: eps-aws-dashboards-pull-image
+
+      - name: build_artifact download
+        uses: actions/download-artifact@v4
+        with:
+          name: build_artifact
+  
+      - name: extract build_artifact
+        run: |
+          mkdir -p .build
+          tar -xf artifact.tar -C .build
+
+      - name: Retrieve AWS Account ID
+        id: retrieve-account-id
+        run: echo "ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)" >> "$GITHUB_ENV"
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        run: |
+          aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com
+
+      - name: Pull cdk-utils-build from Amazon ECR
+        run: |
+          docker pull "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest"
+          docker tag "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest" cdk-utils-build-repo:latest
+
+      - name: Configure AWS Credentials
         id: connect-aws
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
-          role-session-name: eps-aws-dashboards-deployment
+          role-session-name: prescription-clinical-tracker-ui-deployment
           output-credentials: true
 
-      - name: docker_artifact download
-        uses: actions/download-artifact@v4
-        with:
-          name: docker_artifact
-          path: .
-
-      - name: Extract eps-aws-dashboards docker image
-        id: extract-eps-aws-dashboards-image
+      - name: fix cdk.json for deployment
         run: |
-          docker load < eps-aws-dashboards.tar.gz
+          jq \
+          --arg stackName "${{ inputs.stack_name }}" \
+          --arg VERSION_NUMBER "${{ inputs.VERSION_NUMBER }}" \
+          --arg COMMIT_ID "${{ inputs.COMMIT_ID }}" \
+          '.context += {
+            "stackName": $stackName, 
+            "VERSION_NUMBER": $VERSION_NUMBER, 
+            "COMMIT_ID": $COMMIT_ID}' \
+          .build/cdk.json > .build/cdk.new.json
+          mv .build/cdk.new.json .build/cdk.json
 
       - name: Show diff
         run: |
           docker run \
+          -v "$(pwd)/.build":/home/cdkuser/workspace/ \
           -e AWS_ACCESS_KEY_ID=${{ steps.connect-aws.outputs.aws-access-key-id }} \
           -e AWS_SECRET_ACCESS_KEY=${{ steps.connect-aws.outputs.aws-secret-access-key }} \
           -e AWS_SESSION_TOKEN=${{ steps.connect-aws.outputs.aws-session-token }} \
@@ -114,12 +149,14 @@ jobs:
           -e COMMIT_ID="${{ inputs.COMMIT_ID}}" \
           -e SHOW_DIFF="true" \
           -e DEPLOY_CODE="false" \
-          eps-aws-dashboards
+          -e CDK_APP_PATH="packages/cdk/bin/DashboardsApp.ts" \
+          cdk-utils-build-repo:latest
         shell: bash
 
       - name: Deploy code
         run: |
           docker run \
+          -v "$(pwd)/.build":/home/cdkuser/workspace/ \
           -e AWS_ACCESS_KEY_ID=${{ steps.connect-aws.outputs.aws-access-key-id }} \
           -e AWS_SECRET_ACCESS_KEY=${{ steps.connect-aws.outputs.aws-secret-access-key }} \
           -e AWS_SESSION_TOKEN=${{ steps.connect-aws.outputs.aws-session-token }} \
@@ -129,7 +166,8 @@ jobs:
           -e COMMIT_ID="${{ inputs.COMMIT_ID}}" \
           -e SHOW_DIFF="false" \
           -e DEPLOY_CODE="true" \
-          eps-aws-dashboards
+          -e CDK_APP_PATH="packages/cdk/bin/DashboardsApp.ts" \
+          cdk-utils-build-repo:latest
         shell: bash
 
       - name: create_int_release_notes
