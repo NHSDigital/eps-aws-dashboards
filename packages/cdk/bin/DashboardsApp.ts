@@ -18,6 +18,8 @@ Aspects.of(app).add(new AwsSolutionsChecks({verbose: true}))
 Tags.of(app).add("version", version)
 Tags.of(app).add("stackName", stackName)
 Tags.of(app).add("commit", commit)
+Tags.of(app).add("repo", "eps-aws-dashboards")
+Tags.of(app).add("cfnDriftDetectionGroup", "dashboards")
 
 const Dashboards = new DashboardsStack(app, "DashboardsStack", {
   env: {region: "eu-west-2"},
