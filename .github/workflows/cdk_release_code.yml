@@ -125,16 +125,11 @@ jobs:
 
       - name: fix cdk.json for deployment
         run: |
-          jq \
-          --arg stackName "${{ inputs.stack_name }}" \
-          --arg VERSION_NUMBER "${{ inputs.VERSION_NUMBER }}" \
-          --arg COMMIT_ID "${{ inputs.COMMIT_ID }}" \
-          '.context += {
-            "stackName": $stackName, 
-            "VERSION_NUMBER": $VERSION_NUMBER, 
-            "COMMIT_ID": $COMMIT_ID}' \
-          .build/cdk.json > .build/cdk.new.json
-          mv .build/cdk.new.json .build/cdk.json
+          ./.github/scripts/fix_cdk_json.sh
+        env:
+          STACK_NAME: "${{ inputs.stack_name }}"
+          VERSION_NUMBER: "${{ inputs.VERSION_NUMBER }}"
+          COMMIT_ID: "${{ inputs.COMMIT_ID }}"
 
       - name: Show diff
         run: |

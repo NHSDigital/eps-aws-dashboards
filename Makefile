@@ -81,27 +81,23 @@ cdk-deploy: guard-stack_name
 		--require-approval $${REQUIRE_APPROVAL} \
 		--context stackName=$$stack_name \
 		--context VERSION_NUMBER=$$VERSION_NUMBER \
-		--context COMMIT_ID=$$COMMIT_ID \
-		--context epsDomain=$$epsDomain \
-		--context epsZoneId=$$epsZoneId 
+		--context COMMIT_ID=$$COMMIT_ID
 
 cdk-synth:
 	npx cdk synth \
 		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/DashboardsApp.ts" \
+		--context accountId=undefined \
 		--context stackName=dashboards \
-		--context VERSION_NUMBER=undefined \
-		--context COMMIT_ID=undefined \
-		--context epsDomain=$$epsDomain \
-		--context epsZoneId=$$epsZoneId 
+		--context versionNumber=undefined \
+		--context commitId=undefined
 
 cdk-diff:
 	npx cdk diff \
 		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/DashboardsApp.ts" \
+		--context accountId=$$ACCOUNT_ID \
 		--context stackName=$$stack_name \
-		--context VERSION_NUMBER=$$VERSION_NUMBER \
-		--context COMMIT_ID=$$COMMIT_ID \
-		--context epsDomain=$$epsDomain \
-		--context epsZoneId=$$epsZoneId
+		--context versionNumber=$$VERSION_NUMBER \
+		--context commitId=$$COMMIT_ID
 
 cdk-watch: guard-stack_name
 	REQUIRE_APPROVAL="$${REQUIRE_APPROVAL:-any-change}" && \
@@ -113,11 +109,10 @@ cdk-watch: guard-stack_name
 		--all \
 		--ci true \
 		--require-approval $${REQUIRE_APPROVAL} \
+		--context accountId=$$ACCOUNT_ID \
 		--context stackName=$$stack_name \
-		--context VERSION_NUMBER=$$VERSION_NUMBER \
-		--context COMMIT_ID=$$COMMIT_ID \
-		--context epsDomain=$$epsDomain \
-		--context epsZoneId=$$epsZoneId
+		--context versionNumber=$$VERSION_NUMBER \
+		--context commitId=$$COMMIT_ID
 
 build-deployment-container-image:
 	rm -rf .asdf
