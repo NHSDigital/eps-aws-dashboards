@@ -37,7 +37,7 @@ jobs:
       - name: Load config value
         id: load-config
         run: |
-          TAG_FORMAT=$(yq '.TAG_FORMAT' .github/cfg/settings.yml)
+          TAG_FORMAT=$(yq '.TAG_FORMAT' .github/config/settings.yml)
           echo "TAG_FORMAT=$TAG_FORMAT" >> "$GITHUB_OUTPUT"
 
   tag_release:
