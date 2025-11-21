@@ -9,7 +9,7 @@ env:
 
 jobs:
   dependabot-auto-approve-and-merge:
-    uses: NHSDigital/eps-workflow-dependabot/.github/workflows/dependabot-auto-approve-and-merge.yml@1668f5c1b13ff4a831b7b58421e7064debb7bf94
+    uses: NHSDigital/eps-common-workflows/.github/workflows/dependabot-auto-approve-and-merge.yml@ba86b0c6a2a3d4b87398e538e410cec90f57133d
     secrets:
       AUTOMERGE_APP_ID: ${{ secrets.AUTOMERGE_APP_ID }}
       AUTOMERGE_PEM: ${{ secrets.AUTOMERGE_PEM }}
@@ -20,7 +20,7 @@ jobs:
       tag_format: ${{ steps.load-config.outputs.TAG_FORMAT }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
       - name: Get asdf version
         id: asdf-version
@@ -32,7 +32,7 @@ jobs:
           echo "TAG_FORMAT=$TAG_FORMAT" >> "$GITHUB_OUTPUT"
 
   quality_checks:
-    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@aabc1def5fce03f01c5e5c02ca5e4aff3e7aaed6
+    uses: NHSDigital/eps-common-workflows/.github/workflows/quality-checks.yml@ba86b0c6a2a3d4b87398e538e410cec90f57133d
     needs: [get_asdf_version]
     with:
       asdfVersion: ${{ needs.get_asdf_version.outputs.asdf_version }}
@@ -40,7 +40,7 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   pr_title_format_check:
-    uses: NHSDigital/eps-workflow-semantic-release/.github/workflows/pr_title_check.yml@143cd6ba2806e42b016d05dbba000cb5ee333d2f
+    uses: NHSDigital/eps-common-workflows/.github/workflows/pr_title_check.yml@ba86b0c6a2a3d4b87398e538e410cec90f57133d
 
   get_issue_number:
     runs-on: ubuntu-22.04
@@ -48,7 +48,7 @@ jobs:
       issue_number: ${{steps.get_issue_number.outputs.result}}
 
     steps:
-      - uses: actions/github-script@v8
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         name: get issue number
         id: get_issue_number
         with:
@@ -70,7 +70,7 @@ jobs:
 
   tag_release:
     needs: [get_asdf_version]
-    uses: NHSDigital/eps-workflow-semantic-release/.github/workflows/tag-release.yml@143cd6ba2806e42b016d05dbba000cb5ee333d2f
+    uses: NHSDigital/eps-common-workflows/.github/workflows/tag-release.yml@ba86b0c6a2a3d4b87398e538e410cec90f57133d
     with:
       dry_run: true
       asdfVersion: ${{ needs.get_asdf_version.outputs.asdf_version }}
