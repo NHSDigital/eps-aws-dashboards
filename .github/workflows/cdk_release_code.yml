@@ -63,7 +63,7 @@ jobs:
 
     steps:
       - name: Checkout local github actions
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
           ref: ${{ env.BRANCH_NAME }}
           fetch-depth: 0
@@ -196,7 +196,7 @@ jobs:
 
       - name: Checkout gh-pages
         if: ${{ !startsWith(inputs.STACK_NAME, 'lambda-resources-pr-') }}
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.1
         with:
           ref: gh-pages
           path: gh-pages
