@@ -1,6 +1,7 @@
 
 [project]
 python = "^3.12"
+name = "eps-aws-dashboards"
 
 [tool.poetry]
 name = "eps-aws-dashboards"
