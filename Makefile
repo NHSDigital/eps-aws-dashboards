@@ -55,8 +55,8 @@ deep-clean: clean
 check-licenses: check-licenses-node check-licenses-python
 
 check-licenses-node:
-	npm run check-licenses
-	npm run check-licenses --workspace packages/cdk
+	echo "not implemented from console"
+	exit 1
 
 check-licenses-python:
 	scripts/check_python_licenses.sh
