@@ -40,7 +40,7 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   pr_title_format_check:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/pr_title_check.yml@e31e25273fb87450be4ef763ddbed4f531c45f8e
+    uses: NHSDigital/eps-common-workflows/.github/workflows/pr_title_check.yml@67fef01ddbbab2c46778278f93d0a65ab47fd38d
 
   get_issue_number:
     runs-on: ubuntu-22.04
