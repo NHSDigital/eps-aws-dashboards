@@ -32,7 +32,7 @@ jobs:
           echo "TAG_FORMAT=$TAG_FORMAT" >> "$GITHUB_OUTPUT"
 
   quality_checks:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/quality-checks.yml@997a1946c83bb2a9eda418847ed640738af949ff
+    uses: NHSDigital/eps-common-workflows/.github/workflows/quality-checks.yml@dd3026f8ed87cc45ff1882d4276cf928b71c59c2
     needs: [get_asdf_version]
     with:
       asdfVersion: ${{ needs.get_asdf_version.outputs.asdf_version }}
