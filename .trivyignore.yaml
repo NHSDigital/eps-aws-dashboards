@@ -1,0 +1,4 @@
+vulnerabilities:
+  - id: CVE-2026-26996
+    statement:  minimatch vulnerability accepted as risk - dependency of various packages
+    expired_at: 2026-04-01
