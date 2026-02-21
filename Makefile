@@ -1,10 +1,4 @@
-guard-%:
-	@ if [ "${${*}}" = "" ]; then \
-		echo "Environment variable $* not set"; \
-		exit 1; \
-	fi
-
-.PHONY: install build test publish release clean lint
+.PHONY: install build test publish release clean lint install-node compile
 
 install: install-node install-python install-hooks
 
@@ -28,7 +22,7 @@ lint-node: compile-node
 lint: lint-node
 
 test: compile
-	# npm run test --workspace packages/cdk
+	echo "No tests defined yet"
 
 clean:
 	rm -rf cdk.out
