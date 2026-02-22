@@ -134,7 +134,7 @@ jobs:
         run: |
           cd .build
           npx cdk deploy \
-          --app "npx ts-node --prefer-ts-exts packages/cdk/bin/DashboardApp.ts" \
+          --app "npx ts-node --prefer-ts-exts packages/cdk/bin/DashboardsApp.ts" \
           --all \
           --require-approval=never \
           --ci true
