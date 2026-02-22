@@ -41,7 +41,6 @@ if [[ "$STACK_NAME" =~ -pr-[0-9]+$ ]]; then
 fi
 
 # go through all the key values we need to set
-fix_string_key accountId "${ACCOUNT_ID}"
 fix_string_key stackName "${STACK_NAME}"
 fix_string_key versionNumber "${VERSION_NUMBER}"
 fix_string_key commitId "${COMMIT_ID}"

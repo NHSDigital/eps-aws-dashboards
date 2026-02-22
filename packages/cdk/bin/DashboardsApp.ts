@@ -7,7 +7,6 @@ import {AwsSolutionsChecks} from "cdk-nag"
 
 const app = new cdk.App()
 
-const accountId = app.node.tryGetContext("accountId")
 const stackName = app.node.tryGetContext("stackName")
 const version = app.node.tryGetContext("versionNumber")
 const commit = app.node.tryGetContext("commitId")
@@ -17,7 +16,6 @@ const cfnDriftDetectionGroup = app.node.tryGetContext("cfnDriftDetectionGroup")
 Aspects.of(app).add(new AwsSolutionsChecks({verbose: true}))
 
 // add tags to everything
-Tags.of(app).add("accountId", accountId)
 Tags.of(app).add("stackName", stackName)
 Tags.of(app).add("version", version)
 Tags.of(app).add("commit", commit)
@@ -27,8 +25,7 @@ Tags.of(app).add("cfnDriftDetectionGroup", cfnDriftDetectionGroup)
 
 const Dashboards = new DashboardsStack(app, "DashboardsStack", {
   env: {
-    region: "eu-west-2",
-    account: accountId
+    region: "eu-west-2"
   },
   stackName: stackName
 })
