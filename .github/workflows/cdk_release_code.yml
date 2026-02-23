@@ -122,14 +122,6 @@ jobs:
           role-session-name: aws-dashboards-deployment
           output-credentials: true
 
-      - name: fix cdk.json for deployment
-        run: |
-          ./.github/scripts/fix_cdk_json.sh
-        env:
-          STACK_NAME: "${{ inputs.stack_name }}"
-          VERSION_NUMBER: "${{ inputs.VERSION_NUMBER }}"
-          COMMIT_ID: "${{ inputs.COMMIT_ID }}"
-
       - name: Deploy code
         run: |
           cd .build
