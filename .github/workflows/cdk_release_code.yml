@@ -21,12 +21,6 @@ on:
       COMMIT_ID:
         required: true
         type: string
-      LOG_LEVEL:
-        required: true
-        type: string
-      LOG_RETENTION_DAYS:
-        required: true
-        type: string
       CREATE_INT_RELEASE_NOTES:
         type: boolean
         default: false
@@ -39,6 +33,15 @@ on:
       MARK_JIRA_RELEASED:
         type: boolean
         default: false
+      runtime_docker_image:
+        type: string
+        required: true
+      verify_published_from_main_image:
+        type: boolean
+        required: true
+      IS_PULL_REQUEST:
+        type: boolean
+        required: true
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
         required: true
@@ -54,21 +57,30 @@ on:
         required: false
   
 jobs:
+  verify_attestation:
+    uses: NHSDigital/eps-common-workflows/.github/workflows/verify-attestation.yml@d215f841eb18b803e339e4ed597ed1f30e086e17
+    with:
+      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
+      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
+
   release_code:
     runs-on: ubuntu-22.04
+    needs: verify_attestation
+    container:
+      image: ${{ needs.verify_attestation.outputs.pinned_image }}
+      options: --user 1001:1001 --group-add 128
+    defaults:
+      run:
+        shell: bash
     environment: ${{ inputs.TARGET_ENVIRONMENT }}
     permissions:
       id-token: write
       contents: write
 
     steps:
-      - name: Checkout local github actions
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ env.BRANCH_NAME }}
-          fetch-depth: 0
-          sparse-checkout: |
-            .github
+      - name: copy .tool-versions
+        run: |
+          cp /home/vscode/.tool-versions "$HOME/.tool-versions"
 
       - name: create_int_rc_release_notes
         uses: ./.github/actions/update_confluence_jira
@@ -81,15 +93,6 @@ jobs:
           DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
           TARGET_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
           DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
-
-      - name: Configure AWS Credentials
-        id: connect-aws-pull-image
-        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
-        with:
-          aws-region: eu-west-2
-          role-to-assume: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
-          role-session-name: eps-aws-dashboards-pull-image
-
       - name: build_artifact download
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
@@ -98,21 +101,7 @@ jobs:
       - name: extract build_artifact
         run: |
           mkdir -p .build
-          tar -xf artifact.tar -C .build
-
-      - name: Retrieve AWS Account ID
-        id: retrieve-account-id
-        run: echo "ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)" >> "$GITHUB_ENV"
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        run: |
-          aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com
-
-      - name: Pull cdk-utils-build from Amazon ECR
-        run: |
-          docker pull "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest"
-          docker tag "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest" cdk-utils-build-repo:latest
+          tar -xf artifact.tar
 
       - name: Configure AWS Credentials
         id: connect-aws
@@ -123,47 +112,17 @@ jobs:
           role-session-name: aws-dashboards-deployment
           output-credentials: true
 
-      - name: fix cdk.json for deployment
-        run: |
-          ./.github/scripts/fix_cdk_json.sh
-        env:
-          STACK_NAME: "${{ inputs.stack_name }}"
-          VERSION_NUMBER: "${{ inputs.VERSION_NUMBER }}"
-          COMMIT_ID: "${{ inputs.COMMIT_ID }}"
-
-      - name: Show diff
-        run: |
-          docker run \
-          -v "$(pwd)/.build":/home/cdkuser/workspace/ \
-          -e AWS_ACCESS_KEY_ID=${{ steps.connect-aws.outputs.aws-access-key-id }} \
-          -e AWS_SECRET_ACCESS_KEY=${{ steps.connect-aws.outputs.aws-secret-access-key }} \
-          -e AWS_SESSION_TOKEN=${{ steps.connect-aws.outputs.aws-session-token }} \
-          -e AWS_REGION="eu-west-2" \
-          -e stack_name="${{ inputs.STACK_NAME }}" \
-          -e VERSION_NUMBER="${{ inputs.VERSION_NUMBER}}" \
-          -e COMMIT_ID="${{ inputs.COMMIT_ID}}" \
-          -e SHOW_DIFF="true" \
-          -e DEPLOY_CODE="false" \
-          -e CDK_APP_PATH="packages/cdk/bin/DashboardsApp.ts" \
-          cdk-utils-build-repo:latest
-        shell: bash
-
       - name: Deploy code
-        run: |
-          docker run \
-          -v "$(pwd)/.build":/home/cdkuser/workspace/ \
-          -e AWS_ACCESS_KEY_ID=${{ steps.connect-aws.outputs.aws-access-key-id }} \
-          -e AWS_SECRET_ACCESS_KEY=${{ steps.connect-aws.outputs.aws-secret-access-key }} \
-          -e AWS_SESSION_TOKEN=${{ steps.connect-aws.outputs.aws-session-token }} \
-          -e AWS_REGION="eu-west-2" \
-          -e stack_name="${{ inputs.STACK_NAME }}" \
-          -e VERSION_NUMBER="${{ inputs.VERSION_NUMBER}}" \
-          -e COMMIT_ID="${{ inputs.COMMIT_ID}}" \
-          -e SHOW_DIFF="false" \
-          -e DEPLOY_CODE="true" \
-          -e CDK_APP_PATH="packages/cdk/bin/DashboardsApp.ts" \
-          cdk-utils-build-repo:latest
+        run: npm run cdk-deploy --workspace packages/cdk
         shell: bash
+        env:
+          CDK_APP_NAME: DashboardsApp
+          CDK_STACK_NAME: "DashboardsStack"
+          CDK_CONFIG_dashboardStackName: ${{ inputs.STACK_NAME }}
+          CDK_CONFIG_versionNumber: ${{ inputs.VERSION_NUMBER }}
+          CDK_CONFIG_commitId: ${{ inputs.COMMIT_ID }}
+          CDK_CONFIG_isPullRequest: ${{ inputs.IS_PULL_REQUEST }}
+          CDK_CONFIG_environment: ${{ inputs.TARGET_ENVIRONMENT }}
 
       - name: create_int_release_notes
         uses: ./.github/actions/update_confluence_jira

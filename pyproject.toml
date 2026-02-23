@@ -17,14 +17,8 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.14"
-pytest = "^9.0.2"
 
 [tool.poetry.scripts]
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.5.1"
-pip-licenses = "^5.5.1"
-
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
