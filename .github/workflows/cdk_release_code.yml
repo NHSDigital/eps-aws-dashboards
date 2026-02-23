@@ -81,13 +81,6 @@ jobs:
       - name: copy .tool-versions
         run: |
           cp /home/vscode/.tool-versions "$HOME/.tool-versions"
-      - name: Checkout local github actions
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ env.BRANCH_NAME }}
-          fetch-depth: 0
-          sparse-checkout: |
-            .github
 
       - name: create_int_rc_release_notes
         uses: ./.github/actions/update_confluence_jira
@@ -108,7 +101,7 @@ jobs:
       - name: extract build_artifact
         run: |
           mkdir -p .build
-          tar -xf artifact.tar -C .build
+          tar -xf artifact.tar
 
       - name: Configure AWS Credentials
         id: connect-aws
