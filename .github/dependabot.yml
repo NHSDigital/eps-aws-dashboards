@@ -27,6 +27,8 @@ updates:
     versioning-strategy: increase
     commit-message:
       prefix: "Upgrade: [dependabot] - "
+    registries:
+      - npm-github
 
   ###################################
   # Poetry  #########################
