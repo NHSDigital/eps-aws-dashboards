@@ -1,5 +1,5 @@
 import {DashboardsStack} from "../stacks/dashboardsStack"
-import {createApp} from "@nhsdigital/eps-cdk-constructs"
+import {createApp, getConfigFromEnvVar} from "@nhsdigital/eps-cdk-constructs"
 import {addCfnGuardMetadata} from "./utils/appUtils"
 
 async function main() {
@@ -9,10 +9,11 @@ async function main() {
     repoName: "eps-aws-dashboards",
     driftDetectionGroup: "dashboards"
   })
+  const dashboardStackName = getConfigFromEnvVar("dashboardStackName")
 
   const dashboardsStack = new DashboardsStack(app, "DashboardsStack", {
     ...props,
-    stackName: "vpc-resources"
+    stackName: dashboardStackName
   })
   // run a synth to add custom resource lambdas and roles
   app.synth()

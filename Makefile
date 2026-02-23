@@ -40,6 +40,7 @@ cdk-synth:
 	CDK_CONFIG_commitId=undefined \
 	CDK_CONFIG_isPullRequest=false \
 	CDK_CONFIG_environment=dev \
+	CDK_CONFIG_dashboardStackName=dashboards \
 	npm run cdk-synth --workspace packages/cdk/
 
 %:
