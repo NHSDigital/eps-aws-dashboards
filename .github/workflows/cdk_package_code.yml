@@ -55,7 +55,8 @@ jobs:
             node_modules \
             package.json \
             package-lock.json \
-            tsconfig.defaults.json
+            tsconfig.defaults.json \
+            .github
 
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         name: upload build artifact
