@@ -34,50 +34,13 @@ deep-clean: clean
 	rm -rf .venv
 	find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +
 
-
-cdk-deploy: guard-stack_name
-	REQUIRE_APPROVAL="$${REQUIRE_APPROVAL:-any-change}" && \
-	VERSION_NUMBER="$${VERSION_NUMBER:-undefined}" && \
-	COMMIT_ID="$${COMMIT_ID:-undefined}" && \
-		npx cdk deploy \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/DashboardsApp.ts" \
-		--all \
-		--ci true \
-		--require-approval $${REQUIRE_APPROVAL} \
-		--context stackName=$$stack_name \
-		--context VERSION_NUMBER=$$VERSION_NUMBER \
-		--context COMMIT_ID=$$COMMIT_ID
-
 cdk-synth:
-	npx cdk synth \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/DashboardsApp.ts" \
-		--context accountId=undefined \
-		--context stackName=dashboards \
-		--context versionNumber=undefined \
-		--context commitId=undefined
-
-cdk-diff:
-	npx cdk diff \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/DashboardsApp.ts" \
-		--context accountId=$$ACCOUNT_ID \
-		--context stackName=$$stack_name \
-		--context versionNumber=$$VERSION_NUMBER \
-		--context commitId=$$COMMIT_ID
-
-cdk-watch: guard-stack_name
-	REQUIRE_APPROVAL="$${REQUIRE_APPROVAL:-any-change}" && \
-	VERSION_NUMBER="$${VERSION_NUMBER:-undefined}" && \
-	COMMIT_ID="$${COMMIT_ID:-undefined}" && \
-		npx cdk deploy \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/DashboardsApp.ts" \
-		--watch \
-		--all \
-		--ci true \
-		--require-approval $${REQUIRE_APPROVAL} \
-		--context accountId=$$ACCOUNT_ID \
-		--context stackName=$$stack_name \
-		--context versionNumber=$$VERSION_NUMBER \
-		--context commitId=$$COMMIT_ID
+	CDK_APP_NAME=DashboardsApp \
+	CDK_CONFIG_versionNumber=undefined \
+	CDK_CONFIG_commitId=undefined \
+	CDK_CONFIG_isPullRequest=false \
+	CDK_CONFIG_environment=dev \
+	npm run cdk-synth --workspace packages/cdk/
 
 %:
 	@$(MAKE) -f /usr/local/share/eps/Mk/common.mk $@
