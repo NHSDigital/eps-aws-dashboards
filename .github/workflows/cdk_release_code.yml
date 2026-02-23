@@ -21,12 +21,6 @@ on:
       COMMIT_ID:
         required: true
         type: string
-      LOG_LEVEL:
-        required: true
-        type: string
-      LOG_RETENTION_DAYS:
-        required: true
-        type: string
       CREATE_INT_RELEASE_NOTES:
         type: boolean
         default: false
@@ -43,6 +37,9 @@ on:
         type: string
         required: true
       verify_published_from_main_image:
+        type: boolean
+        required: true
+      IS_PULL_REQUEST:
         type: boolean
         required: true
     secrets:
@@ -123,14 +120,15 @@ jobs:
           output-credentials: true
 
       - name: Deploy code
-        run: |
-          cd .build
-          npx cdk deploy \
-          --app "npx ts-node --prefer-ts-exts packages/cdk/bin/DashboardsApp.ts" \
-          --all \
-          --require-approval=never \
-          --ci true
+        run: npm run cdk-deploy --workspace packages/cdk
         shell: bash
+        env:
+          CDK_APP_NAME: DashboardsApp
+          CDK_STACK_NAME: ${{ inputs.STACK_NAME }}
+          CDK_CONFIG_versionNumber: ${{ inputs.VERSION_NUMBER }}
+          CDK_CONFIG_commitId: ${{ inputs.COMMIT_ID }}
+          CDK_CONFIG_isPullRequest: ${{ inputs.IS_PULL_REQUEST }}
+          CDK_CONFIG_environment: ${{ inputs.TARGET_ENVIRONMENT }}
 
       - name: create_int_release_notes
         uses: ./.github/actions/update_confluence_jira
