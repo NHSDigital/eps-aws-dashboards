@@ -33,11 +33,8 @@ on:
       MARK_JIRA_RELEASED:
         type: boolean
         default: false
-      runtime_docker_image:
+      pinned_image:
         type: string
-        required: true
-      verify_published_from_main_image:
-        type: boolean
         required: true
       IS_PULL_REQUEST:
         type: boolean
@@ -57,17 +54,11 @@ on:
         required: false
   
 jobs:
-  verify_attestation:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/verify-attestation.yml@d215f841eb18b803e339e4ed597ed1f30e086e17
-    with:
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
 
   release_code:
     runs-on: ubuntu-22.04
-    needs: verify_attestation
     container:
-      image: ${{ needs.verify_attestation.outputs.pinned_image }}
+      image: ${{ inputs.pinned_image }}
       options: --user 1001:1001 --group-add 128
     defaults:
       run:
