@@ -73,6 +73,16 @@ jobs:
         run: |
           cp /home/vscode/.tool-versions "$HOME/.tool-versions"
 
+      - name: build_artifact download
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: build_artifact
+  
+      - name: extract build_artifact
+        run: |
+          mkdir -p .build
+          tar -xf artifact.tar
+
       - name: create_int_rc_release_notes
         uses: ./.github/actions/update_confluence_jira
         if: ${{ inputs.CREATE_INT_RC_RELEASE_NOTES == true }}
@@ -84,15 +94,6 @@ jobs:
           DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
           TARGET_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
           DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
-      - name: build_artifact download
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
-        with:
-          name: build_artifact
-  
-      - name: extract build_artifact
-        run: |
-          mkdir -p .build
-          tar -xf artifact.tar
 
       - name: Configure AWS Credentials
         id: connect-aws
