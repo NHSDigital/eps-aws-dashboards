@@ -43,10 +43,8 @@ jobs:
         name: get issue number
         id: get_issue_number
         with:
+          result-encoding: string
           script: |
-            # const core = require('@actions/core');
-            # const { context, github } = require('@actions/github');
-
             // 1. Normal pull_request event
             if (context.eventName === 'pull_request' && context.payload.pull_request) {
               return context.payload.pull_request.number;
@@ -58,7 +56,7 @@ jobs:
               const match = queueRef.match(/pr-(\d+)/);
 
               if (match) {
-                return Number(match[1]);
+                return String(match[1]);
               }
 
               // Fallback to commit association using the synthetic SHA
@@ -78,7 +76,7 @@ jobs:
               // Strict match: PR head SHA must match original PR head
               const pr = data.find(pr => pr.head.sha === data[0].head.sha);
 
-              return pr.number;
+              return String(pr.number);
             }
 
   tag_release:
