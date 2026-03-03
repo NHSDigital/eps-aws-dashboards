@@ -30,6 +30,7 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   pr_title_format_check:
+    if: github.event_name != 'merge_group'
     uses: NHSDigital/eps-common-workflows/.github/workflows/pr_title_check.yml@8404cf6e3a61ac8de4d1644e175e288aa4965815
 
   get_issue_number:
@@ -43,22 +44,45 @@ jobs:
         id: get_issue_number
         with:
           script: |
-            if (context.issue.number) {
-              // Return issue number if present
-              return context.issue.number;
-            } else {
-              // Otherwise return issue number from commit
-              return (
+            const core = require('@actions/core');
+            const { context, github } = require('@actions/github');
+
+            // 1. Normal pull_request event
+            if (context.eventName === 'pull_request' && context.payload.pull_request) {
+              return context.payload.pull_request.number;
+            }
+
+            // 2. merge_group event
+            if (context.eventName === 'merge_group') {
+              const queueRef = context.ref; // refs/heads/gh-readonly-queue/main/pr-142-abc
+              const match = queueRef.match(/pr-(\d+)/);
+
+              if (match) {
+                return Number(match[1]);
+              }
+
+              // Fallback to commit association using the synthetic SHA
+              const sha = context.payload.merge_group.head_sha;
+
+              const { data } =
                 await github.rest.repos.listPullRequestsAssociatedWithCommit({
-                  commit_sha: context.sha,
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                })
-              ).data[0].number;
+                  commit_sha: sha,
+                });
+
+              if (!data.length) {
+                core.setFailed(`No PR associated with commit ${sha}`);
+              }
+
+              // Strict match: PR head SHA must match original PR head
+              const pr = data.find(pr => pr.head.sha === data[0].head.sha);
+
+              return pr.number;
             }
-          result-encoding: string
 
   tag_release:
+    if: github.event_name != 'merge_group'
     needs: [get_config_values]
     uses: NHSDigital/eps-common-workflows/.github/workflows/tag-release-devcontainer.yml@8404cf6e3a61ac8de4d1644e175e288aa4965815
     with:
@@ -84,7 +108,14 @@ jobs:
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
   release_code:
-    needs: [get_issue_number, package_code, get_commit_id, quality_checks, get_config_values]
+    needs:
+      [
+        get_issue_number,
+        package_code,
+        get_commit_id,
+        quality_checks,
+        get_config_values,
+      ]
     uses: ./.github/workflows/cdk_release_code.yml
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
