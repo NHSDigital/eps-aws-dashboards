@@ -44,8 +44,8 @@ jobs:
         id: get_issue_number
         with:
           script: |
-            const core = require('@actions/core');
-            const { context, github } = require('@actions/github');
+            # const core = require('@actions/core');
+            # const { context, github } = require('@actions/github');
 
             // 1. Normal pull_request event
             if (context.eventName === 'pull_request' && context.payload.pull_request) {
