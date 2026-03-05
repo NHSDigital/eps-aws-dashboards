@@ -31,7 +31,7 @@ jobs:
 
   pr_title_format_check:
     if: github.event_name != 'merge_group'
-    uses: NHSDigital/eps-common-workflows/.github/workflows/pr_title_check.yml@8404cf6e3a61ac8de4d1644e175e288aa4965815
+    uses: NHSDigital/eps-common-workflows/.github/workflows/pr_title_check.yml@91d5906640395bcda81360fb4b78adaf2f09fd2e
 
   get_issue_number:
     runs-on: ubuntu-22.04
