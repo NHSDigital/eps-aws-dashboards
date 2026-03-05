@@ -82,7 +82,7 @@ jobs:
   tag_release:
     if: github.event_name != 'merge_group'
     needs: [get_config_values]
-    uses: NHSDigital/eps-common-workflows/.github/workflows/tag-release-devcontainer.yml@8404cf6e3a61ac8de4d1644e175e288aa4965815
+    uses: NHSDigital/eps-common-workflows/.github/workflows/tag-release-devcontainer.yml@91d5906640395bcda81360fb4b78adaf2f09fd2e
     with:
       dry_run: true
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
