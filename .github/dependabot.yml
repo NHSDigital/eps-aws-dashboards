@@ -15,25 +15,11 @@ updates:
     # default location of `.github/workflows`
     directory: "/"
     schedule:
-      interval: "daily"
-    commit-message:
-      prefix: "Upgrade: [dependabot] - "
-
-  ###################################
-  # NPM workspace  ##################
-  ###################################
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
       interval: "weekly"
       day: "friday"
       time: "18:00" # UTC
-    open-pull-requests-limit: 20
-    versioning-strategy: increase
     commit-message:
       prefix: "Upgrade: [dependabot] - "
-    registries:
-      - npm-github
 
   ###################################
   # Poetry  #########################
@@ -43,8 +29,24 @@ updates:
     schedule:
       interval: "weekly"
       day: "friday"
-      time: "18:00" # UTC
+      time: "20:00" # UTC
     open-pull-requests-limit: 20
     commit-message:
       prefix: "Upgrade: [dependabot] - "
     versioning-strategy: increase
+
+  ###################################
+  # NPM workspace  ##################
+  ###################################
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "22:00" # UTC
+    open-pull-requests-limit: 20
+    versioning-strategy: increase
+    commit-message:
+      prefix: "Upgrade: [dependabot] - "
+    registries:
+      - npm-github
