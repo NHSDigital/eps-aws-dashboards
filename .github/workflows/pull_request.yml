@@ -83,6 +83,9 @@ jobs:
     if: github.event_name != 'merge_group'
     needs: [get_config_values]
     uses: NHSDigital/eps-common-workflows/.github/workflows/tag-release-devcontainer.yml@update_jira
+    permissions:
+      id-token: 'write'
+      contents: 'write'
     with:
       dry_run: true
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
