@@ -32,6 +32,8 @@ jobs:
   tag_release:
     needs: [quality_checks, get_commit_id, get_config_values]
     uses: NHSDigital/eps-common-workflows/.github/workflows/tag-release-devcontainer.yml@update_jira
+    permissions:
+      id-token: 'write'
     with:
       dry_run: false
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}

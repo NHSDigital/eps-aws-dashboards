@@ -7,3 +7,4 @@ id-token: write
 .*nhsd-rules-deny.txt.*
 .*\.venv.*
 .*node_modules.*
+id-token: 'write'
