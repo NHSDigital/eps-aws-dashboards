@@ -33,3 +33,4 @@ amplify_outputs.json
 .asdf
 cdk.out/
 .npmrc
+.trivy_out/

@@ -21,18 +21,6 @@ on:
       COMMIT_ID:
         required: true
         type: string
-      CREATE_INT_RELEASE_NOTES:
-        type: boolean
-        default: false
-      CREATE_INT_RC_RELEASE_NOTES:
-        type: boolean
-        default: false
-      CREATE_PROD_RELEASE_NOTES:
-        type: boolean
-        default: false
-      MARK_JIRA_RELEASED:
-        type: boolean
-        default: false
       pinned_image:
         type: string
         required: true
@@ -83,18 +71,6 @@ jobs:
           mkdir -p .build
           tar -xf artifact.tar
 
-      - name: create_int_rc_release_notes
-        uses: ./.github/actions/update_confluence_jira
-        if: ${{ inputs.CREATE_INT_RC_RELEASE_NOTES == true }}
-        with:
-          TARGET_ENVIRONMENT: int
-          RELEASE_TAG: ${{ inputs.VERSION_NUMBER }}
-          CONFLUENCE_PAGE_ID: "913232854"
-          CREATE_RC_RELEASE_NOTES: true
-          DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-          TARGET_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-          DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
-
       - name: Configure AWS Credentials
         id: connect-aws
         uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
@@ -115,35 +91,6 @@ jobs:
           CDK_CONFIG_commitId: ${{ inputs.COMMIT_ID }}
           CDK_CONFIG_isPullRequest: ${{ inputs.IS_PULL_REQUEST }}
           CDK_CONFIG_environment: ${{ inputs.TARGET_ENVIRONMENT }}
-
-      - name: create_int_release_notes
-        uses: ./.github/actions/update_confluence_jira
-        if: ${{ inputs.CREATE_INT_RELEASE_NOTES == true && always() && !failure() && !cancelled() }}
-        with:
-          TARGET_ENVIRONMENT: int
-          CONFLUENCE_PAGE_ID: "913232855"
-          CREATE_RC_RELEASE_NOTES: false
-          DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-          TARGET_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-          DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
-
-      - name: create_prod_release_notes
-        uses: ./.github/actions/update_confluence_jira
-        if: ${{ inputs.CREATE_PROD_RELEASE_NOTES == true && always() && !failure() && !cancelled() }}
-        with:
-          TARGET_ENVIRONMENT: prod
-          CONFLUENCE_PAGE_ID: "913232856"
-          CREATE_RC_RELEASE_NOTES: false
-          DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-          TARGET_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-          DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
-
-      - name: mark_released_in_jira
-        uses: ./.github/actions/mark_jira_released
-        if: ${{ inputs.MARK_JIRA_RELEASED == true && always() && !failure() && !cancelled() }}
-        with:
-          RELEASE_TAG: ${{ inputs.VERSION_NUMBER }}
-          DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
 
       - name: Checkout gh-pages
         if: ${{ !startsWith(inputs.STACK_NAME, 'lambda-resources-pr-') }}
