@@ -173,19 +173,8 @@ This .github folder contains workflows and templates related to GitHub, along wi
 - `pull_request_template.md` Template for pull requests.
 - `dependabot.yml` Dependabot definition file.
 
-Actions are in the `.github/actions` folder:
-
-- `mark_jira_released` Action to mark Jira issues as released.
-- `update_confluence_jira` Action to update Confluence with Jira issues.
-
 Scripts are in the `.github/scripts` folder:
-
-- `call_mark_jira_released.sh` Calls a Lambda function to mark Jira issues as released.
-- `create_env_release_notes.sh` Generates release notes for a specific environment using a Lambda function.
-- `create_int_rc_release_notes.sh` Creates release notes for integration environment using a Lambda function.
 - `delete_stacks.sh` Checks and deletes active CloudFormation stacks associated with closed pull requests.
-- `get_current_dev_tag.sh` Retrieves the current development tag and sets it as an environment variable.
-- `get_target_deployed_tag.sh` Retrieves the currently deployed tag and sets it as an environment variable.
 
 Workflows are in the `.github/workflows` folder:
 
