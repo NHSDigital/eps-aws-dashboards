@@ -3,7 +3,7 @@ name: Update Devcontainer Version
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 18 * * 1"
+    - cron: "0 18 * * 4"
 
 jobs:
   update_devcontainer_version:
