@@ -18,9 +18,11 @@ updates:
       interval: "weekly"
       day: "friday"
       time: "18:00" # UTC
+    open-pull-requests-limit: 20
     commit-message:
       prefix: "Upgrade: [dependabot] - "
-
+    cooldown:
+      default-days: 3
   ###################################
   # Poetry  #########################
   ###################################
@@ -34,7 +36,8 @@ updates:
     commit-message:
       prefix: "Upgrade: [dependabot] - "
     versioning-strategy: increase
-
+    cooldown:
+      default-days: 3
   ###################################
   # NPM workspace  ##################
   ###################################
@@ -50,3 +53,5 @@ updates:
       prefix: "Upgrade: [dependabot] - "
     registries:
       - npm-github
+    cooldown:
+      default-days: 3
