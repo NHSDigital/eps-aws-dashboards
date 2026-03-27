@@ -7,7 +7,7 @@ on:
 
 jobs:
   update_devcontainer_version:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/update-dev-container-version.yml@88f13d58fc823a78860dc8b9b0f666914fec2411
+    uses: NHSDigital/eps-common-workflows/.github/workflows/update-dev-container-version.yml@23342d86a245c076937abd6aecdd0ce06446b1e6
     permissions:
         contents: read
         packages: read
