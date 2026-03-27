@@ -18,6 +18,7 @@ updates:
       interval: "weekly"
       day: "friday"
       time: "18:00" # UTC
+    open-pull-requests-limit: 20
     commit-message:
       prefix: "Upgrade: [dependabot] - "
     cooldown:
