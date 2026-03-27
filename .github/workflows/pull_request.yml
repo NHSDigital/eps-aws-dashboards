@@ -11,18 +11,18 @@ env:
 
 jobs:
   get_config_values:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/get-repo-config.yml@5ac2707dd9cd60ad127275179495b9c890d74711
+    uses: NHSDigital/eps-common-workflows/.github/workflows/get-repo-config.yml@23342d86a245c076937abd6aecdd0ce06446b1e6
     with:
       verify_published_from_main_image: false
 
   dependabot-auto-approve-and-merge:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/dependabot-auto-approve-and-merge.yml@5ac2707dd9cd60ad127275179495b9c890d74711
+    uses: NHSDigital/eps-common-workflows/.github/workflows/dependabot-auto-approve-and-merge.yml@23342d86a245c076937abd6aecdd0ce06446b1e6
     secrets:
       AUTOMERGE_APP_ID: ${{ secrets.AUTOMERGE_APP_ID }}
       AUTOMERGE_PEM: ${{ secrets.AUTOMERGE_PEM }}
 
   quality_checks:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/quality-checks-devcontainer.yml@5ac2707dd9cd60ad127275179495b9c890d74711
+    uses: NHSDigital/eps-common-workflows/.github/workflows/quality-checks-devcontainer.yml@23342d86a245c076937abd6aecdd0ce06446b1e6
     needs: [get_config_values]
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
@@ -31,7 +31,7 @@ jobs:
 
   pr_title_format_check:
     if: github.event_name != 'merge_group'
-    uses: NHSDigital/eps-common-workflows/.github/workflows/pr_title_check.yml@5ac2707dd9cd60ad127275179495b9c890d74711
+    uses: NHSDigital/eps-common-workflows/.github/workflows/pr_title_check.yml@23342d86a245c076937abd6aecdd0ce06446b1e6
 
   get_issue_number:
     runs-on: ubuntu-22.04
