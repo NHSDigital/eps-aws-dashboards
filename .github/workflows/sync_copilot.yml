@@ -1,18 +1,23 @@
 name: Sync Copilot Instructions
 
 on:
-  schedule:
-    - cron: "0 20 * * 4"
   workflow_dispatch:
-    inputs:
-      common_workflows_ref:
-        description: "Branch to sync from"
-        required: false
-        type: string
-        default: main
+  schedule:
+    - cron: '0 6 * * 1'
 
 jobs:
-  sync-copilot:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/sync_copilot.yml@f3d19a678a725917a5c59cae4d76db621bb7c9c7
-    with:
-      common_workflows_ref: ${{ inputs.common_workflows_ref }}
+  sync-copilot-instructions:
+    runs-on: ubuntu-latest
+    environment: create_pull_request
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Sync shared instructions
+        uses: NHSDigital/eps-copilot-instructions@initial_instructions
+        with:
+          common_workflows_ref: main
+          calling_repo_base_branch: main
+          CREATE_PULL_REQUEST_APP_ID: ${{ secrets.CREATE_PULL_REQUEST_APP_ID }}
+          CREATE_PULL_REQUEST_PEM: ${{ secrets.CREATE_PULL_REQUEST_PEM }}
