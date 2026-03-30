@@ -14,3 +14,5 @@ on:
 jobs:
   sync-copilot:
     uses: NHSDigital/eps-common-workflows/.github/workflows/sync_copilot.yml@f3d19a678a725917a5c59cae4d76db621bb7c9c7
+    with:
+      common_workflows_ref: ${{ inputs.common_workflows_ref }}
