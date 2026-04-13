@@ -1,0 +1,4 @@
+ignore:
+  # flatted - dependency of eslint
+  - vulnerability: GHSA-rf6f-7fwh-wjgh
+  - vulnerability: GHSA-25h7-pfq9-p65f
