@@ -3,17 +3,24 @@ name: deploy to environments
 on:
   workflow_dispatch:
 
-env:
-  BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
+permissions: {}
 
 jobs:
   get_config_values:
     uses: NHSDigital/eps-common-workflows/.github/workflows/get-repo-config.yml@e798d5aee897de6f7dc387dd5623fcd9ba4c8929
+    permissions:
+      attestations: read
+      contents: read
+      packages: read
     with:
       verify_published_from_main_image: true
   quality_checks:
     uses: NHSDigital/eps-common-workflows/.github/workflows/quality-checks-devcontainer.yml@f3d19a678a725917a5c59cae4d76db621bb7c9c7
     needs: [get_config_values]
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
     secrets:
@@ -35,6 +42,7 @@ jobs:
     permissions:
       id-token: 'write'
       contents: 'write'
+      packages: write
     with:
       dry_run: false
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
@@ -48,12 +56,19 @@ jobs:
   package_code:
     needs: [tag_release, get_config_values]
     uses: ./.github/workflows/cdk_package_code.yml
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
 
   release_dev:
     needs: [tag_release, package_code, get_commit_id, get_config_values]
     uses: ./.github/workflows/cdk_release_code.yml
+    permissions:
+      contents: write
+      id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
@@ -73,6 +88,9 @@ jobs:
   release_ref:
     needs: [tag_release, release_dev, package_code, get_commit_id, get_config_values]
     uses: ./.github/workflows/cdk_release_code.yml
+    permissions:
+      contents: write
+      id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
@@ -87,6 +105,9 @@ jobs:
   release_qa:
     needs: [tag_release, release_dev, package_code, get_commit_id, get_config_values]
     uses: ./.github/workflows/cdk_release_code.yml
+    permissions:
+      contents: write
+      id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
@@ -102,6 +123,9 @@ jobs:
   release_int:
     needs: [tag_release, release_qa, package_code, get_commit_id, get_config_values]
     uses: ./.github/workflows/cdk_release_code.yml
+    permissions:
+      contents: write
+      id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
@@ -121,6 +145,9 @@ jobs:
   release_prod:
     needs: [tag_release, release_int, package_code, get_commit_id, get_config_values]
     uses: ./.github/workflows/cdk_release_code.yml
+    permissions:
+      contents: write
+      id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}

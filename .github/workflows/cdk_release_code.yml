@@ -38,7 +38,8 @@ on:
         required: false
       DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE:
         required: false
-  
+permissions: {}
+
 jobs:
 
   release_code:
@@ -92,22 +93,26 @@ jobs:
 
       - name: Checkout gh-pages
         if: ${{ !startsWith(inputs.STACK_NAME, 'lambda-resources-pr-') }}
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: gh-pages
           path: gh-pages
+          persist-credentials: true
 
       - name: update release tag in github pages
         if: ${{ inputs.TARGET_ENVIRONMENT != 'dev-pr' }}
         run: |
           cd gh-pages
           NOW=$(date +'%Y-%m-%dT%H:%M:%S')
-          echo "tag,release_datetime" > _data/${{ inputs.TARGET_ENVIRONMENT }}_latest.csv
-          echo "${{ inputs.VERSION_NUMBER }},${NOW}" >> _data/${{ inputs.TARGET_ENVIRONMENT }}_latest.csv
-          echo "${{ inputs.VERSION_NUMBER }},${NOW}" >> _data/${{ inputs.TARGET_ENVIRONMENT }}_deployments.csv
+          echo "tag,release_datetime" > "_data/${TARGET_ENVIRONMENT}_latest.csv"
+          echo "${VERSION_NUMBER},${NOW}" >> "_data/${TARGET_ENVIRONMENT}_latest.csv"
+          echo "${VERSION_NUMBER},${NOW}" >> "_data/${TARGET_ENVIRONMENT}_deployments.csv"
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add _data/${{ inputs.TARGET_ENVIRONMENT }}_latest.csv
-          git add _data/${{ inputs.TARGET_ENVIRONMENT }}_deployments.csv
-          git commit -m 'update releases for ${{ inputs.TARGET_ENVIRONMENT }}'
+          git add "_data/${TARGET_ENVIRONMENT}_latest.csv"
+          git add "_data/${TARGET_ENVIRONMENT}_deployments.csv"
+          git commit -m "update releases for ${TARGET_ENVIRONMENT}"
           parallel --retries 10 --delay 3 ::: "git pull --rebase && git push"
+        env:
+          TARGET_ENVIRONMENT: ${{ inputs.TARGET_ENVIRONMENT }}
+          VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}

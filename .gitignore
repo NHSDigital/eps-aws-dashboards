@@ -34,3 +34,4 @@ amplify_outputs.json
 cdk.out/
 .npmrc
 .trivy_out/
+.sbom/
