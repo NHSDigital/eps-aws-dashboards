@@ -38,12 +38,12 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   pr_title_format_check:
-    if: github.event_name != 'merge_group'
     uses: NHSDigital/eps-common-workflows/.github/workflows/pr_title_check.yml@e798d5aee897de6f7dc387dd5623fcd9ba4c8929
     permissions:
       pull-requests: write
   get_issue_number:
     runs-on: ubuntu-22.04
+    needs: quality_checks
     outputs:
       issue_number: ${{steps.get_issue_number.outputs.result}}
 
@@ -52,44 +52,23 @@ jobs:
         name: get issue number
         id: get_issue_number
         with:
-          result-encoding: string
           script: |
-            // 1. Normal pull_request event
-            if (context.eventName === 'pull_request' && context.payload.pull_request) {
-              return context.payload.pull_request.number;
-            }
-
-            // 2. merge_group event
-            if (context.eventName === 'merge_group') {
-              const queueRef = context.ref; // refs/heads/gh-readonly-queue/main/pr-142-abc
-              const match = queueRef.match(/pr-(\d+)/);
-
-              if (match) {
-                return String(match[1]);
-              }
-
-              // Fallback to commit association using the synthetic SHA
-              const sha = context.payload.merge_group.head_sha;
-
-              const { data } =
+            if (context.issue.number) {
+              // Return issue number if present
+              return context.issue.number;
+            } else {
+              // Otherwise return issue number from commit
+              return (
                 await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                  commit_sha: context.sha,
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  commit_sha: sha,
-                });
-
-              if (!data.length) {
-                core.setFailed(`No PR associated with commit ${sha}`);
-              }
-
-              // Strict match: PR head SHA must match original PR head
-              const pr = data.find(pr => pr.head.sha === data[0].head.sha);
-
-              return String(pr.number);
+                })
+              ).data[0].number;
             }
+          result-encoding: string
 
   tag_release:
-    if: github.event_name != 'merge_group'
     needs: [get_config_values]
     uses: NHSDigital/eps-common-workflows/.github/workflows/tag-release-devcontainer.yml@f3d19a678a725917a5c59cae4d76db621bb7c9c7
     permissions:
