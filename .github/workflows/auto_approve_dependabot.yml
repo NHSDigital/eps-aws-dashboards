@@ -5,6 +5,7 @@ on:
   schedule:
     - cron: '*/30 * * * *'
 
+permissions: {}
 jobs:
   auto-approve-dependabot:
     runs-on: ubuntu-22.04
