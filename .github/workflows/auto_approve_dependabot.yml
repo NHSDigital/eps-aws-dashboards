@@ -1,0 +1,20 @@
+name: Auto-approve dependency updates
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'
+
+jobs:
+  auto-approve-dependabot:
+    runs-on: ubuntu-22.04
+    environment: create_pull_request
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Auto approve and enable auto-merge
+        uses: NHSDigital/eps-dependabot-approve@db39aa18bf6b1ce317219661299a91c572689bb7
+        with:
+          AUTOMERGE_APP_ID: ${{ secrets.AUTOMERGE_APP_ID }}
+          AUTOMERGE_PEM: ${{ secrets.AUTOMERGE_PEM }}
